@@ -2,10 +2,7 @@ package com.bkh.tutorials.repo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,6 +27,6 @@ public class CourseEntity {
     private FileEntity courseLogo;
 
     @OneToMany(mappedBy = "course", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<TopicEntity> topics =new ArrayList<>();
+    private List<TopicEntity> topics = new ArrayList<>();
 
 }

@@ -1,5 +1,6 @@
 package com.bkh.tutorials.repo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,8 +28,9 @@ public class TopicEntity {
     @Column(name = "topic_content")
     private String topicContent;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
+    @JsonIgnore
     private CourseEntity course;
 
 }

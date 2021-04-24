@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,9 +56,9 @@ public class TutorialService {
 
     public Course addCourse(Course course) {
         return Optional.ofNullable(fIleRepository.findById(course.getCourseLogoId()))
-                .map(fileEntity -> {
+                .map(f -> {
                     CourseEntity courseEntity = Mappers.mapCourseModelToEntity.apply(course);
-                    courseEntity.setCourseLogo(fileEntity.get());
+                    courseEntity.setCourseLogo(f.get());
                     courseEntity.setTopics(course.getTopics().stream()
                             .map(topic -> {
                                 TopicEntity topicEntity = Mappers.mapTopicModelToEntity.apply(topic);
@@ -72,20 +71,21 @@ public class TutorialService {
     }
 
     public Course updateCourse(int courseId, Course course) {
-        return Optional.ofNullable(fIleRepository.findById(course.getCourseLogoId()))
-                .map(fileEntity -> {
-                    CourseEntity courseEntity = Optional.ofNullable(courseRepository.findById(courseId))
-                            .map(c -> c.get())
-                            .orElseThrow(() -> new RuntimeException("course not found"));
-                    courseEntity.setCourseName(course.getCourseName());
-                    courseEntity.setCourseLogo(fileEntity.get());
+        return Optional.ofNullable(courseRepository.findById(courseId))
+                .map(c -> {
+                    CourseEntity courseEntity = c.get();
+                    Optional.ofNullable(course.getCourseLogoId()).ifPresent(courseLogoId ->
+                            courseEntity.setCourseLogo(Optional.ofNullable(fIleRepository.findById(courseLogoId))
+                                    .map(fileEntity -> fileEntity.get())
+                                    .orElseThrow(() -> new RuntimeException("logo file not found"))));
+                    Optional.ofNullable(course.getCourseName()).ifPresent(name -> courseEntity.setCourseName(name));
                     return Mappers.mapCourseEntityToModel.apply(courseRepository.save(courseEntity));
-                }).orElseThrow(() -> new RuntimeException("file not found"));
+                }).orElseThrow(() -> new RuntimeException("course not found"));
     }
 
     public boolean deleteCourse(int courseId) {
         return Optional.ofNullable(courseRepository.findById(courseId))
-                .map(topicEntity -> {
+                .map(c -> {
                     courseRepository.deleteById(courseId);
                     return true;
                 }).orElseThrow(() -> new RuntimeException("course not found"));
@@ -94,29 +94,27 @@ public class TutorialService {
 
     public Topic addTopic(int courseId, Topic topic) {
         return Optional.ofNullable(courseRepository.findById(courseId))
-                .map(courseEntity -> {
+                .map(c -> {
                     TopicEntity topicEntity = Mappers.mapTopicModelToEntity.apply(topic);
-                    topicEntity.setCourse((courseEntity.get()));
+                    topicEntity.setCourse((c.get()));
                     return Mappers.mapTopicEntityToModel.apply(topicRepository.save(topicEntity));
                 }).orElseThrow(() -> new RuntimeException("course not found"));
     }
 
     public Topic updateTopic(int courseId, int topicId, Topic topic) {
-        return Optional.ofNullable(courseRepository.findById(courseId))
-                .map(courseEntity -> {
-                    TopicEntity topicEntity = Optional.ofNullable(topicRepository.findById(topicId))
-                            .map(t -> t.get())
-                            .orElseThrow(() -> new RuntimeException("topic not found"));
-                    topicEntity.setTopicName(topic.getTopicName());
-                    topicEntity.setTopicOrder(topic.getTopicOrder());
-                    topicEntity.setTopicContent(topic.getTopicContent());
+        return Optional.ofNullable(topicRepository.findById(topicId))
+                .map(t -> {
+                    TopicEntity topicEntity = t.get();
+                    Optional.ofNullable(topic.getTopicName()).ifPresent(name -> topicEntity.setTopicName(name));
+                    Optional.ofNullable(topic.getTopicContent()).ifPresent(content -> topicEntity.setTopicContent(content));
+                    Optional.ofNullable(topic.getTopicOrder()).ifPresent(order -> topicEntity.setTopicOrder(order));
                     return Mappers.mapTopicEntityToModel.apply(topicRepository.save(topicEntity));
-                }).orElseThrow(() -> new RuntimeException("course not found"));
+                }).orElseThrow(() -> new RuntimeException("topic not found"));
     }
 
     public boolean deleteTopic(int topicId) {
         return Optional.ofNullable(topicRepository.findById(topicId))
-                .map(topicEntity -> {
+                .map(t -> {
                     topicRepository.deleteById(topicId);
                     return true;
                 }).orElseThrow(() -> new RuntimeException("topic not found"));

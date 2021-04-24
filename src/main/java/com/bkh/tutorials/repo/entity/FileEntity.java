@@ -1,5 +1,6 @@
 package com.bkh.tutorials.repo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +28,7 @@ public class FileEntity {
     private byte[] data;
 
     @OneToOne(mappedBy = "courseLogo", orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private CourseEntity course;
 
 
