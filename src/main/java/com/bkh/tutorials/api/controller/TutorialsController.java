@@ -58,8 +58,8 @@ public class TutorialsController implements TutorialsApi {
     }
 
     @Override
-    public ResponseEntity deleteTopic(int topicId) {
-        return ResponseEntity.ok(tutorialService.deleteTopic(topicId));
+    public ResponseEntity deleteTopic(int courseId, int topicId) {
+        return ResponseEntity.ok(tutorialService.deleteTopic(courseId, topicId));
     }
 
     @Override

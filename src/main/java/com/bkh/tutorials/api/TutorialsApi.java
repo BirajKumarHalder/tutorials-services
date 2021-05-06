@@ -37,7 +37,7 @@ public interface TutorialsApi {
     @DeleteMapping("/course/{courseId}")
     ResponseEntity deleteCourse(@PathVariable("courseId") int courseId);
 
-    @DeleteMapping("/topic/{topicId}")
-    ResponseEntity deleteTopic(@PathVariable("topicId") int topicId);
+    @DeleteMapping("/course/{courseId}/topic/{topicId}")
+    ResponseEntity deleteTopic(@PathVariable("courseId") int courseId, @PathVariable("topicId") int topicId);
 
 }

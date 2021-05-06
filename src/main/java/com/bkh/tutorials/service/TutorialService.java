@@ -97,6 +97,9 @@ public class TutorialService {
                 .map(c -> {
                     TopicEntity topicEntity = Mappers.mapTopicModelToEntity.apply(topic);
                     topicEntity.setCourse((c.get()));
+                    if (topicEntity.getTopicOrder() == null) {
+                        topicEntity.setTopicOrder(c.get().getTopics().size() + 1);
+                    }
                     return Mappers.mapTopicEntityToModel.apply(topicRepository.save(topicEntity));
                 }).orElseThrow(() -> new RuntimeException("course not found"));
     }
@@ -108,11 +111,12 @@ public class TutorialService {
                     Optional.ofNullable(topic.getTopicName()).ifPresent(name -> topicEntity.setTopicName(name));
                     Optional.ofNullable(topic.getTopicContent()).ifPresent(content -> topicEntity.setTopicContent(content));
                     Optional.ofNullable(topic.getTopicOrder()).ifPresent(order -> topicEntity.setTopicOrder(order));
+                    System.out.println(topicEntity);
                     return Mappers.mapTopicEntityToModel.apply(topicRepository.save(topicEntity));
                 }).orElseThrow(() -> new RuntimeException("topic not found"));
     }
 
-    public boolean deleteTopic(int topicId) {
+    public boolean deleteTopic(int courseId, int topicId) {
         return Optional.ofNullable(topicRepository.findById(topicId))
                 .map(t -> {
                     topicRepository.deleteById(topicId);
